@@ -1,54 +1,65 @@
 #include "vector.h"
 #include <stdlib.h>
 #include <math.h>
+#include <stdarg.h>
 
-V3_ptr V3_build() {
-    V3_ptr v = calloc(1, sizeof(*v));
+V3 V3_create(double x, double y, double z) {
+    V3 v = {.x = x, .y = y, .z = z };
     return v;
 }
 
-V3_ptr V3(V3_ptr result, double x, double y, double z) {
-    if (result == NULL) {
-        result = V3_build();
+V3 V3_scale(V3_ptr a, double t) {
+    V3 v = {
+        .x = a->x*t,
+        .y = a->y*t,
+        .z = a->z*t
+    };
+    return v;
+}
+
+V3 V3_sum(V3_ptr a, ...) {
+    V3 v = {0};
+    va_list ap;
+    va_start(ap, a);
+
+    V3_ptr iter;
+    for (iter = a; iter != NULL; iter = va_arg(ap, V3_ptr)) {
+        v.x += iter->x;
+        v.y += iter->y;
+        v.z += iter->z;
     }
-    
-    result->x = x;
-    result->y = y;
-    result->z = z;
 
-    return result;
+    va_end(ap);
+    return v;
 }
 
-V3_ptr V3_scale(V3_ptr result, V3_ptr v, double t) {
-    result->x = v->x*t;
-    result->y = v->y*t;
-    result->z = v->z*t;
-    return result;
+V3 V3_cross(V3_ptr a, V3_ptr b) {
+    V3 v = {
+        .x = a->y*b->z - a->z*b->y,
+        .y = a->z*b->x - a->x*b->z,
+        .z = a->x*b->y - a->y*b->x
+    };
+    return v;
 }
 
-V3_ptr V3_sum(V3_ptr result, V3_ptr v, V3_ptr w) {
-    result->x = v->x + w->x;
-    result->y = v->y + w->y;
-    result->z = v->z + w->z;
-    return result;
+V3 V3_lower_bound(V3_ptr a, double e) {
+    V3 v = {
+        .x = a->x < e ? e: a->x,
+        .y = a->y < e ? e: a->y,
+        .z = a->z < e ? e: a->z
+    };
+    return v;
 }
 
-V3_ptr V3_cross(V3_ptr result, V3_ptr v, V3_ptr w) {
-    result->x = v->y*w->z - v->z*w->y;
-    result->y = v->z*w->x - v->x*w->z;
-    result->z = v->x*w->y - v->y*w->x;
-    return result;
+V3 V3_unit(V3_ptr a) {
+    return V3_scale(a, 1.0/V3_norm(a));
 }
 
-V3_ptr V3_unit(V3_ptr result, V3_ptr v) {
-    return V3_scale(result, v, 1.0/V3_norm(v));
+double V3_norm(V3_ptr a) {
+    return sqrt(V3_dot(a, a));
 }
 
-double V3_norm(V3_ptr v) {
-    return sqrt(V3_dot(v, v));
-}
-
-double V3_dot(V3_ptr v, V3_ptr w) {
-    return v->x*w->x + v->y+w->y + v->z*w->z;
+double V3_dot(V3_ptr a, V3_ptr b) {
+    return a->x*b->x + a->y*b->y + a->z*b->z;
 }
 

@@ -21,5 +21,5 @@ int main() {
         }
     }
 
-    BMP_save(image, "output/1-space.bmp");
+    BMP_save(image, "output/1_space.bmp");
 }
