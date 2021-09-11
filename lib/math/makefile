@@ -1,7 +1,7 @@
 CC=gcc
 CF=-c -Wall -Werror -std=c99
 CL=-lm
-OBJ=vector.o ray.o
+OBJ=vector.o ray.o random.o
 
 all: libmath.a
 
