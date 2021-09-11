@@ -7,7 +7,7 @@
 typedef struct _Camera {
     double ar;  // aspect ratio
     double vw_h;// viewport height
-    double vh_w;// viewport width
+    double vw_w;// viewport width
     double fl;  // focal length
 
     V3 orig;

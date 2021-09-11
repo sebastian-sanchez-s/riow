@@ -2,10 +2,11 @@ CC=gcc
 GRAPHICS=-Ilib/graphic/includes -Llib/graphic/ -lbmp
 MATH=-Ilib/math/ -Llib/math -lmath -lm
 HITT=-Ilib/hittables -Llib/hittables -lhittables
+CAM=-Ilib/camera -Llib/camera -lcamera
 FLAGS=-g -std=c99
 
 %: %.c
-	$(CC) $< $(FLAGS) $(GRAPHICS) $(HITT) $(MATH) -o app
+	$(CC) $< $(FLAGS) $(GRAPHICS) $(HITT) $(MATH) $(CAM) -o app
 
 run: app
 	./app
