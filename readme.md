@@ -24,3 +24,6 @@ Just for fun and personal joy.
 
 ### 6 Antialiasing
 <img src="output/6_antialiasing.bmp" height="250px">
+
+### 7 Mate Reflection (incomplete) 
+<img src="output/7_mate_reflection.bmp" height="250px">
