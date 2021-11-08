@@ -9,14 +9,16 @@
 #include <stdbool.h>
 #include <math.h>
 
+#define TMAX 1000.0
+#define TMIN 0.01
+
 typedef struct BMP* Img;
 
 V3 V3_random_in_unit_sphere() {
     float theta = rand_between(0, 6.28);
     float phi = rand_between(0, 3.14);
-    float r = rand_between(0.1, 1.0);
 
-    return V3_create(r*sin(phi)*cos(theta), r*sin(phi)*sin(theta), r*cos(phi));
+    return V3_create(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
 }
 
 bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
@@ -42,7 +44,7 @@ V3 ray_color(Ray_ptr r, Sphere_ptr s[], int ncollision) {
     }
 
     HitRecord h;
-    if (sphere_closest_hit(s, r, &h, 0, 500)) {
+    if (sphere_closest_hit(s, r, &h, TMIN, TMAX)) {
         /* Calculate bouncing ray */
         V3 rand_dir = V3_random_in_unit_sphere();
         V3 target = V3_sum(&h.point, &h.normal, &rand_dir, NULL);
@@ -66,6 +68,9 @@ void write_color(struct BMP* image, int row, int col, V3 pixel_color, int sample
     double scale = 1.0/samples_per_pixel;
 
     pixel_color = V3_scale(&pixel_color, scale);
+    pixel_color.x = sqrt(pixel_color.x);
+    pixel_color.y = sqrt(pixel_color.y);
+    pixel_color.z = sqrt(pixel_color.z);
 
     struct Color color = {
         .red   = pixel_color.x * MAX_COLOR_24,
