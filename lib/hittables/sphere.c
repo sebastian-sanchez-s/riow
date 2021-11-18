@@ -11,7 +11,7 @@
 bool Sphere_hit(Sphere_ptr s, Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
     /* Determine if ray hits sphere */
     V3 neg_center = V3_scale(&s->center, -1);
-    V3 oc = V3_sum(&r->orig, &neg_center, NULL);
+    V3 oc = V3_nsum(2, &r->orig, &neg_center);
 
     double a  = V3_dot(&r->dir, &r->dir);
     double hb = V3_dot(&oc, &r->dir);
@@ -39,7 +39,7 @@ bool Sphere_hit(Sphere_ptr s, Ray_ptr r, HitRecord_ptr h, double t_min, double t
     h->t      = root;
     h->point  = Ray_at(r, root);
 
-    V3 out_normal = V3_sum(&h->point, &neg_center, NULL);
+    V3 out_normal = V3_nsum(2, &h->point, &neg_center);
     out_normal = V3_scale(&out_normal, 1.0/s->rad);
     
     set_face_normal(h, r, &out_normal);

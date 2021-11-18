@@ -17,6 +17,27 @@ V3 V3_scale(V3_ptr a, double t) {
     return v;
 }
 
+V3 V3_nsum(int n, V3_ptr a, ...) {
+    if (n <= 1) {
+        return *a;
+    }
+
+    V3 v = {0};
+    va_list vector_list;
+    va_start(vector_list, a);
+
+    V3_ptr iter = a;
+    while (n-- > 0) {
+        v.x += iter->x;
+        v.y += iter->y;
+        v.z += iter->z;
+        iter = va_arg(vector_list, V3_ptr);
+    }
+
+    va_end(vector_list);
+    return v;
+}
+
 V3 V3_sum(V3_ptr a, ...) {
     V3 v = {0};
     va_list ap;
