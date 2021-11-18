@@ -21,6 +21,7 @@ V3 V3_random_in_unit_sphere() {
     return V3_create(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
 }
 
+
 bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
     HitRecord ch; // current hit record
     bool has_hitted = false;
@@ -45,13 +46,13 @@ V3 ray_color(Ray_ptr r, Sphere_ptr s[], int ncollision) {
 
     HitRecord h;
     if (sphere_closest_hit(s, r, &h, TMIN, TMAX)) {
-        /* Calculate bouncing ray */
-        V3 rand_dir = V3_random_in_unit_sphere();
-        V3 target = V3_sum(&h.point, &h.normal, &rand_dir, NULL);
-        V3 neg_point = V3_scale(&h.point, -1.0);
-        
+        V3 unit = V3_random_in_unit_sphere();
+        unit = V3_scale(&unit, V3_dot(&unit, &h.normal) > 0.0 ? 1.0: -1.0);
+
+        V3 target = V3_nsum(2, &h.point, &unit);
+
         r->orig = h.point;
-        r->dir  = V3_sum(&target, &neg_point, NULL);
+        r->dir  = V3_nsum(2, &target, &unit);
         
         V3 color = ray_color(r, s, ncollision - 1);
 
@@ -119,8 +120,8 @@ int main() {
     Sphere_ptr spheres[] = {&s1, &s2, NULL};
     
     /* Drawing constants */
-    const int samples_per_pixel = 100;
-    const int max_collisions = 50;
+    const int samples_per_pixel = 50;
+    const int max_collisions = 25;
 
     for(int row = h-1; row >= 0; --row) {
         for(int col = 0; col < w; col++) {
@@ -137,9 +138,9 @@ int main() {
                 Ray r = Camera_get_ray(&cam, u, v);
 
                 V3 new_color = ray_color(&r, spheres, max_collisions);
-                pixel_color = V3_sum(&pixel_color, &new_color, NULL);
+                pixel_color = V3_nsum(2, &pixel_color, &new_color);
             }
-            
+
             write_color(image, row, col, pixel_color, samples_per_pixel);
         }
     }
