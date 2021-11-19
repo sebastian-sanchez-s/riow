@@ -14,38 +14,13 @@
 
 typedef struct BMP* Img;
 
-V3 V3_random_in_unit_sphere() {
-    float theta = rand_between(0, 6.28);
-    float phi = rand_between(0, 3.14);
-
-    return V3_create(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
-}
-
-
-bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
-    HitRecord ch; // current hit record
-    bool has_hitted = false;
-    double closest_hit = t_max;
-
-    for (int i = 0; s[i]; i++) {
-        if (Sphere_hit(s[i], r, &ch, t_min, closest_hit)) {
-            has_hitted = true;
-            closest_hit = ch.t;
-            *h = ch;
-        }
-    }
-
-    return has_hitted;
-}
-
-
 V3 ray_color(Ray_ptr r, Sphere_ptr s[], int ncollision) {
     if (ncollision <= 0) {
         return V3_create(0, 0, 0);
     }
 
     HitRecord h;
-    if (sphere_closest_hit(s, r, &h, TMIN, TMAX)) {
+    if (Sphere_closest_hit(s, r, &h, TMIN, TMAX)) {
         V3 unit = V3_random_in_unit_sphere();
         unit = V3_scale(&unit, V3_dot(&unit, &h.normal) > 0.0 ? 1.0: -1.0);
 

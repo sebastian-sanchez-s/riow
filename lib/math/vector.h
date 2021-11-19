@@ -14,6 +14,7 @@ V3 V3_nsum(int, V3_ptr, ...);
 V3 V3_cross(V3_ptr, V3_ptr);
 V3 V3_unit(V3_ptr);
 V3 V3_lower_bound(V3_ptr, double);
+V3 V3_random_in_unit_sphere();
 
 double V3_norm(V3_ptr);
 double V3_dot(V3_ptr, V3_ptr);

@@ -1,4 +1,5 @@
 #include "vector.h"
+#include "random.h"
 #include <stdlib.h>
 #include <math.h>
 #include <stdarg.h>
@@ -6,6 +7,13 @@
 V3 V3_create(double x, double y, double z) {
     V3 v = {.x = x, .y = y, .z = z };
     return v;
+}
+
+V3 V3_random_in_unit_sphere() {
+    float theta = rand_between(0, 6.28);
+    float phi = rand_between(0, 3.14);
+
+    return V3_create(sin(phi)*cos(theta), sin(phi)*sin(theta), cos(phi));
 }
 
 V3 V3_scale(V3_ptr a, double t) {

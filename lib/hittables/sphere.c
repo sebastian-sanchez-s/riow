@@ -46,3 +46,19 @@ bool Sphere_hit(Sphere_ptr s, Ray_ptr r, HitRecord_ptr h, double t_min, double t
 
     return true;
 }
+
+bool Sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
+    HitRecord ch; // current hit record
+    bool has_hitted = false;
+    double closest_hit = t_max;
+
+    for (int i = 0; s[i]; i++) {
+        if (Sphere_hit(s[i], r, &ch, t_min, closest_hit)) {
+            has_hitted = true;
+            closest_hit = ch.t;
+            *h = ch;
+        }
+    }
+
+    return has_hitted;
+}
