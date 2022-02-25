@@ -1,29 +1,25 @@
-# Ray Tracing in One Weekend Follow up
-This is my follow up in the guide [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
+# Ray Tracing in One Weekend in C
 
-It's basically the same guide but in C and using a small BMP library.
+Follow up of [Ray Tracing in One Weekend](https://raytracing.github.io/books/RayTracingInOneWeekend.html).
 
-# Why?
-Just for fun and personal joy.
+## 1. Color Space
+<img src="output/1_color_space.ppm" height="250px">
 
-# Examples
-### 1 Space
-<img src="output/1_space.bmp" height="250px">
+## 2. Blue Gradient 
+<img src="output/2_blue_gradient.ppm" height="250px">
 
-### 2 Blue Gradient
-<img src="output/2_blue_grad.bmp" height="250px">
+## 3. Sphere 
+<img src="output/3_sphere.ppm" height="250px">
 
-### 3 Sphere
-<img src="output/3_sphere.bmp" height="250px">
+## 4. Shading 
+<img src="output/4_shading.ppm" height="250px">
 
-### 4 Shading
-<img src="output/4_shading.bmp" height="250px">
+## 5. Hittables 
+<img src="output/5_hittables.ppm" height="250px">
 
-### 5 Hittables
-<img src="output/5_hittable.bmp" height="250px">
+## 6. Antialiasing 
+<img src="output/6_antialiasing.ppm" height="250px">
 
-### 6 Antialiasing
-<img src="output/6_antialiasing.bmp" height="250px">
+## 7. Mate Reflection 
+<img src="output/7_mate_reflection.ppm" height="250px">
 
-### 7 Mate Reflection 
-<img src="output/7_mate_reflection.bmp" height="250px">

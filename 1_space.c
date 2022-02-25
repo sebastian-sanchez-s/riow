@@ -1,11 +1,14 @@
-#include "BMP.h"
+#include "lib/ppm.h"
+
+typedef union PPM_Color COLOR;
 
 int main() {
     int h = 512;
     int w = 512;
 
-    struct BMP * image = BMP_create(w, h, 24, 0);
-    struct Color color = {0};
+    PPM_init(h, w);
+    COLOR c = {{0}};
+
     float ri, gi, bi = 0.25;
 
     for(int row = h-1; row >= 0; row--) {
@@ -13,13 +16,14 @@ int main() {
             ri = (float)col / (w-1);
             gi = (float)row / (h-1);
 
-            color.red = ri * MAX_COLOR_24;
-            color.green = gi * MAX_COLOR_24;
-            color.blue = bi * MAX_COLOR_24;
+            c.r = ri * 255;
+            c.g = gi * 255;
+            c.b = bi * 255;
 
-            BMP_set_pixel(image, row, col, color);
+            PPM_set(row, col, c);
         }
     }
 
-    BMP_save(image, "output/1_space.bmp");
+    PPM_save_as("output/1_space.ppm");
+    PPM_destroy();
 }

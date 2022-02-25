@@ -1,13 +1,15 @@
-#include "BMP.h"
-#include "vector.h"
-#include "ray.h"
-#include "sphere.h"
+#include "lib/ppm.h"
+#include "lib/vector.h"
+#include "lib/ray.h"
+#include "lib/sphere.h"
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 
-typedef struct BMP* Img;
+#define MAX_COLOR 255
+
+typedef union PPM_Color Color; 
 
 bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
     HitRecord ch; // current hit record
@@ -25,26 +27,26 @@ bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min
     return has_hitted;
 }
 
-struct Color ray_color(Ray_ptr r, Sphere_ptr s[]) {
+Color ray_color(Ray_ptr r, Sphere_ptr s[]) {
     HitRecord h;
 
     if (sphere_closest_hit(s, r, &h, 0, 500)) {
-        struct Color color = {
-            .red   = .5*(h.normal.x+1.0)*MAX_COLOR_24,
-            .green = .5*(h.normal.y+1.0)*MAX_COLOR_24,
-            .blue  = .5*(h.normal.z+1.0)*MAX_COLOR_24
-        };
+        Color color = {{
+            .r = .5*(h.normal.x+1.0)*MAX_COLOR,
+            .g = .5*(h.normal.y+1.0)*MAX_COLOR,
+            .b = .5*(h.normal.z+1.0)*MAX_COLOR
+        }};
         return color;
     }
 
     V3 unit_dir = V3_unit(&r->dir);
     double t = 0.5 * (unit_dir.y + 1.0);
 
-    struct Color color = {
-        .red  = (1.0 - 0.5*t) * MAX_COLOR_24,
-        .green= (1.0 - 0.3*t) * MAX_COLOR_24,
-        .blue = MAX_COLOR_24
-    };
+    Color color = {{
+        .r = (1.0 - 0.5*t) * MAX_COLOR,
+        .g = (1.0 - 0.3*t) * MAX_COLOR,
+        .b = MAX_COLOR
+    }};
 
     return color;
 }
@@ -54,14 +56,13 @@ int main() {
     double aspect_ratio = 16.0/9.0;
     int w = 400;
     int h = w/aspect_ratio;
-    Img image = BMP_create(w, h, 24, 0);
+    PPM_init(h, w);
     
     double vw_h = 2.0;
     double vw_w = round(vw_h * aspect_ratio);
     double focal_length = 1.0;
     
     /* Camera */
-    V3 direction;
     V3 origin     = {0.0};
     V3 horizontal = {.x = vw_w, .y =  0.0, .z = 0.0};
     V3 vertical   = {.x =  0.0, .y = vw_h, .z = 0.0};
@@ -73,7 +74,7 @@ int main() {
     
     /* Drawing/render */
     // Objects
-    Ray ray = {.orig = origin, .dir = direction};
+    Ray ray = {.orig = origin};
 
     Sphere s1 = {
         .center = V3_create(0, 0, -1),
@@ -87,7 +88,7 @@ int main() {
 
     Sphere_ptr spheres[] = {&s1, &s2, NULL};
 
-    for(int row = h-1; row >= 0; --row) {
+    for(int row = 0; row < h; row++) {
         for(int col = 0; col < w; col++) {
             double u = (double)col / (w-1);
             double v = (double)row / (h-1);
@@ -95,12 +96,12 @@ int main() {
             V3 scale_h = V3_scale(&horizontal, u);
             V3 scale_v = V3_scale(&vertical, v);
 
-            ray.dir = V3_sum(&llc, &scale_h, &scale_v, NULL);
+            ray.dir = V3_nsum(3, &llc, &scale_h, &scale_v);
             
-            struct Color color = ray_color(&ray, spheres);
-            BMP_set_pixel(image, row, col, color);
+            Color color = ray_color(&ray, spheres);
+            PPM_set(row, col, color);
         }
     }
 
-    BMP_save(image, "output/5_hittable.bmp");
+    PPM_save_as("output/5_hittable.ppm");
 }

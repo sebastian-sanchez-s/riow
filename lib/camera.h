@@ -1,5 +1,5 @@
-#ifndef CAMERA_H
-#define CAMERA_H
+#ifndef _CAMERA_H_
+#define _CAMERA_H_
 
 #include "vector.h"
 #include "ray.h"
@@ -13,7 +13,7 @@ typedef struct _Camera {
     V3 orig;
     V3 hori;
     V3 vert;
-    V3 llc;
+    V3 llc; // lower left corner
 } Camera;
 
 typedef Camera* Camera_ptr;

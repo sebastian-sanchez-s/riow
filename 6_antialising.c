@@ -1,15 +1,17 @@
-#include "BMP.h"
-#include "vector.h"
-#include "ray.h"
-#include "sphere.h"
-#include "camera.h"
-#include "random.h"
+#include "lib/ppm.h"
+#include "lib/vector.h"
+#include "lib/ray.h"
+#include "lib/sphere.h"
+#include "lib/camera.h"
+#include "lib/random.h"
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 
-typedef struct BMP* Img;
+typedef union PPM_Color Color; 
+
+#define MAX_COLOR 255
 
 bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
     HitRecord ch; // current hit record
@@ -51,18 +53,18 @@ V3 ray_color(Ray_ptr r, Sphere_ptr s[]) {
     return color;
 }
 
-void write_color(struct BMP* image, int row, int col, V3 pixel_color, int samples_per_pixel) {
+void write_color(int row, int col, V3 pixel_color, int samples_per_pixel) {
     double scale = 1.0/samples_per_pixel;
 
     pixel_color = V3_scale(&pixel_color, scale);
 
-    struct Color color = {
-        .red   = pixel_color.x * MAX_COLOR_24,
-        .green = pixel_color.y * MAX_COLOR_24,
-        .blue  = pixel_color.z * MAX_COLOR_24
-    };
+    Color color = {{
+        .r = pixel_color.x * MAX_COLOR,
+        .g = pixel_color.y * MAX_COLOR,
+        .b = pixel_color.z * MAX_COLOR
+    }};
 
-    BMP_set_pixel(image, row, col, color);
+    PPM_set(row, col, color);
 }
 
 int main() {
@@ -71,7 +73,7 @@ int main() {
     int w = 400;
     int h = w/aspect_ratio;
     int samples_per_pixel = 100;
-    Img image = BMP_create(w, h, 24, 0);
+    PPM_init(h, w);
     
     /* Camera */
     Camera cam = {
@@ -116,12 +118,12 @@ int main() {
                 Ray r = Camera_get_ray(&cam, u, v);
 
                 V3 new_color = ray_color(&r, spheres);
-                pixel_color = V3_sum(&pixel_color, &new_color, NULL);
+                pixel_color = V3_nsum(2, &pixel_color, &new_color);
             }
             
-            write_color(image, row, col, pixel_color, samples_per_pixel);
+            write_color(row, col, pixel_color, samples_per_pixel);
         }
     }
 
-    BMP_save(image, "output/6_antialiasing.bmp");
+    PPM_save_as("output/6_antialiasing.ppm");
 }

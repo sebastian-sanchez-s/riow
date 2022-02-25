@@ -1,18 +1,20 @@
-#include "BMP.h"
-#include "vector.h"
-#include "ray.h"
-#include "sphere.h"
-#include "camera.h"
-#include "random.h"
+#include "lib/ppm.h"
+#include "lib/vector.h"
+#include "lib/ray.h"
+#include "lib/sphere.h"
+#include "lib/camera.h"
+#include "lib/random.h"
 
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 
+#define MAX_COLOR 255
+
 #define TMAX 1000.0
 #define TMIN 0.01
 
-typedef struct BMP* Img;
+typedef union PPM_Color Color;
 
 V3 ray_color(Ray_ptr r, Sphere_ptr s[], int ncollision) {
     if (ncollision <= 0) {
@@ -40,7 +42,7 @@ V3 ray_color(Ray_ptr r, Sphere_ptr s[], int ncollision) {
     return V3_create(1.0 - 0.5*t, 1.0 - 0.3*t, 1.0);
 }
 
-void write_color(struct BMP* image, int row, int col, V3 pixel_color, int samples_per_pixel) {
+void write_color(int row, int col, V3 pixel_color, int samples_per_pixel) {
     double scale = 1.0/samples_per_pixel;
 
     pixel_color = V3_scale(&pixel_color, scale);
@@ -48,13 +50,13 @@ void write_color(struct BMP* image, int row, int col, V3 pixel_color, int sample
     pixel_color.y = sqrt(pixel_color.y);
     pixel_color.z = sqrt(pixel_color.z);
 
-    struct Color color = {
-        .red   = pixel_color.x * MAX_COLOR_24,
-        .green = pixel_color.y * MAX_COLOR_24,
-        .blue  = pixel_color.z * MAX_COLOR_24
-    };
+    Color color = {{
+        .r = pixel_color.x * MAX_COLOR,
+        .g = pixel_color.y * MAX_COLOR,
+        .b = pixel_color.z * MAX_COLOR
+    }};
 
-    BMP_set_pixel(image, row, col, color);
+    PPM_set(row, col, color);
 }
 
 int main() {
@@ -62,7 +64,7 @@ int main() {
     const double aspect_ratio = 16.0/9.0;
     const int w = 400;
     const int h = w/aspect_ratio;
-    Img image = BMP_create(w, h, 24, 0);
+    PPM_init(h, w);
     
     /* Camera */
     Camera cam = {
@@ -100,9 +102,6 @@ int main() {
 
     for(int row = h-1; row >= 0; --row) {
         for(int col = 0; col < w; col++) {
-            printf("\r(%3.1f\%) Processing pixel [%5d, %5d]", (1.0-(float)(row*w)/(w*h))*100.0, row, col);
-            fflush(stdin);
-
             V3 pixel_color = {0};
             
             // Antialising
@@ -116,9 +115,9 @@ int main() {
                 pixel_color = V3_nsum(2, &pixel_color, &new_color);
             }
 
-            write_color(image, row, col, pixel_color, samples_per_pixel);
+            write_color(row, col, pixel_color, samples_per_pixel);
         }
     }
 
-    BMP_save(image, "output/7_mate_reflection.bmp");
+    PPM_save_as("output/7_mate_reflection.ppm");
 }

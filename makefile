@@ -1,15 +1,12 @@
-CC=gcc
-GRAPHICS=-Ilib/graphic/includes -Llib/graphic/ -lbmp
-MATH=-Ilib/math/ -Llib/math -lmath -lm
-HITT=-Ilib/hittables -Llib/hittables -lhittables
-CAM=-Ilib/camera -Llib/camera -lcamera
-FLAGS=-g -std=c99
+cc=gcc
+cflags=-g -std=c2x -Wall -Werror
 
-%: %.c
-	$(CC) $< $(FLAGS) $(GRAPHICS) $(HITT) $(MATH) $(CAM) -o app
+libdir=lib/shared
+libs_names := $(shell find $(libdir)/ -name \*.so) 
 
-run: app
-	./app
+run: $(f) 
+	rm -f run
+	$(cc) $< $(cflags) -lm -L$(libdir) $(libs_names) -o run
+	./run
 
-clean:
-	rm app
+
