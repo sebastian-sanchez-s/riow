@@ -1,10 +1,10 @@
 #include <stdlib.h>
 #include "random.h"
 
-double uniform() {
+double randUniform() {
     return (float)rand() / (RAND_MAX + 1.0);
 }
 
-double rand_between(double min, double max) {
-    return uniform()*(max-min) + min;
+double randBetween(double min, double max) {
+    return randUniform()*(max-min) + min;
 }

@@ -8,12 +8,12 @@
 
 typedef struct _HitRecord {
     double t;
-    V3 point;
-    V3 normal;
+    Vec3 point;
+    Vec3 normal;
     bool front_face;
 } HitRecord;
 
 typedef HitRecord* HitRecordPtr;
 
-void HT_set_face_normal(HitRecordPtr, RayPtr, V3Ptr);
+void hrSetFaceNormal(HitRecordPtr, RayPtr, Vec3Ptr);
 #endif

@@ -3,20 +3,20 @@
 
 typedef struct Vector3 {
     double x, y, z;
-} V3;
+} Vec3;
 
-typedef V3* V3Ptr;
+typedef Vec3* Vec3Ptr;
 
-V3 V3_create(double x, double y, double z);
-V3 V3_scale(V3Ptr, double);
-V3 V3_sum(V3Ptr, ...);
-V3 V3_nsum(int, V3Ptr, ...);
-V3 V3_cross(V3Ptr, V3Ptr);
-V3 V3_unit(V3Ptr);
-V3 V3_lower_bound(V3Ptr, double);
-V3 V3_random_in_unit_sphere();
+Vec3 vec3Create(double x, double y, double z);
+Vec3 vec3Scale(Vec3Ptr, double);
+Vec3 vec3Sum(Vec3Ptr, ...);
+Vec3 vec3NSum(int, Vec3Ptr, ...);
+Vec3 vec3Cross(Vec3Ptr, Vec3Ptr);
+Vec3 vec3Unit(Vec3Ptr);
+Vec3 vec3LowerBound(Vec3Ptr, double);
+Vec3 vec3RandomInUnitSphere();
 
-double V3_norm(V3Ptr);
-double V3_dot(V3Ptr, V3Ptr);
+double vec3Norm(Vec3Ptr);
+double vec3Dot(Vec3Ptr, Vec3Ptr);
 
 #endif

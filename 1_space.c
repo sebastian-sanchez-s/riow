@@ -1,13 +1,11 @@
 #include "lib/ppm.h"
 
-typedef union PPM_Color COLOR;
-
 int main() {
     int h = 512;
     int w = 512;
 
-    PPM_init(h, w);
-    COLOR c = {{0}};
+    ppmInit(h, w);
+    PPMColor c = {{0}};
 
     float ri, gi, bi = 0.25;
 
@@ -20,10 +18,10 @@ int main() {
             c.g = gi * 255;
             c.b = bi * 255;
 
-            PPM_set(row, col, c);
+            ppmSet(row, col, c);
         }
     }
 
-    PPM_save_as("output/1_space.ppm");
-    PPM_destroy();
+    ppmSaveAs("output/1_space.ppm");
+    ppmDestroy();
 }

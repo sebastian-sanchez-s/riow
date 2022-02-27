@@ -2,13 +2,10 @@
 #include "ppm.h"
 #include <stdbool.h>
 
-typedef struct PPM IMG;
-typedef union PPM_Color COLOR;
-
 /*****
  * Globals and macros
  * *********/
-IMG *focus= NULL;
+PPMObject *focus= NULL;
 
 static inline bool BETWEEN(int value, int lim_inf, int lim_sup) {
     return (value >= lim_inf && value < lim_sup);
@@ -26,7 +23,7 @@ static inline bool BETWEEN(int value, int lim_inf, int lim_sup) {
 /******
  * Implementations
  * ***********/
-IMG* PPM_init(int h, int w) {
+PPMObjectPtr ppmInit(int h, int w) {
     focus = dv_malloc(sizeof(*focus));
     focus->w = w;
     focus->h = h;
@@ -35,17 +32,21 @@ IMG* PPM_init(int h, int w) {
     return focus;
 }
 
-void PPM_set_focus(IMG *new_focus) {
+void ppmSetFocus(PPMObjectPtr new_focus) {
     focus = new_focus;
 }
 
-void PPM_destroy() {
+PPMObjectPtr ppmGetFocus() {
+    return focus;
+}
+
+void ppmDestroy() {
     free(focus->pixels);
     free(focus);
 }
 
 
-void PPM_set(int y, int x, COLOR c) {
+void ppmSet(int y, int x, PPMColor c) {
     PPM_COORDINATES_SANITY_CHECK(y, x);
 
     focus->pixels[offset(y, x)] = c.r;
@@ -53,15 +54,15 @@ void PPM_set(int y, int x, COLOR c) {
     focus->pixels[offset(y, x) + 2] = c.b;
 }
 
-void PPM_save_as(const char * filename) {
+void ppmSaveAs(const char * filename) {
     FILE * fd = dv_file_open(filename, "w");
 
-    PPM_save(fd);
+    ppmSave(fd);
     
     fclose(fd);
 }
 
-void PPM_save(FILE * fd) {
+void ppmSave(FILE * fd) {
     fprintf(fd, "P3\n%i %i\n255\n", focus->w, focus->h);
     for (int i = focus->h - 1; i >= 0; i--) {
         for (int j = 0; j < focus->w; j++) {

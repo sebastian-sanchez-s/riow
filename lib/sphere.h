@@ -9,7 +9,7 @@
 #include "ray.h"
 
 typedef struct _Sphere {
-    V3 center;
+    Vec3 center;
     double rad;
 } Sphere;
 

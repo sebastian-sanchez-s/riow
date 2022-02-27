@@ -4,12 +4,12 @@
 #include "vector.h"
 
 typedef struct _Ray {
-    V3 orig;
-    V3 dir;
+    Vec3 orig;
+    Vec3 dir;
 } Ray;
 
 typedef Ray* RayPtr;
 
-V3 Ray_at(RayPtr, double);
+Vec3 rayAt(RayPtr, double);
 
 #endif

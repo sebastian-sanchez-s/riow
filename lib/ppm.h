@@ -3,26 +3,28 @@
 
 #include "dasvaca.h"
 
-struct PPM {
+typedef struct {
     int w;
     int h;
     u8 * pixels;
-};
+} PPMObject;
 
-union PPM_Color {
+typedef PPMObject* PPMObjectPtr;
+
+typedef union {
     struct {u8 r, g, b; };
     u32 color;
-};
+} PPMColor;
 
-struct PPM * PPM_init(int h, int w);
-void PPM_destroy();
+PPMObjectPtr ppmInit(int h, int w);
+void ppmDestroy();
 
-void PPM_set_focus(struct PPM *);
-struct PPM * PPM_get_focus();
+void ppmSetFocus(PPMObject*);
+PPMObjectPtr ppmGetFocus();
 
-void PPM_set(int y, int x, union PPM_Color);
+void ppmSet(int y, int x, PPMColor);
 
-void PPM_save_as(const char *);
-void PPM_save(FILE *);
+void ppmSaveAs(const char *);
+void ppmSave(FILE *);
 
 #endif
