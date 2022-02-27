@@ -16,7 +16,7 @@ typedef struct _Camera {
     V3 llc; // lower left corner
 } Camera;
 
-typedef Camera* Camera_ptr;
+typedef Camera* CameraPtr;
 
-Ray Camera_get_ray(Camera_ptr, double u, double v);
+Ray Camera_get_ray(CameraPtr, double u, double v);
 #endif

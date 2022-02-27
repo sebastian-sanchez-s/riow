@@ -1,33 +1,18 @@
-#include "lib/ppm.h"
-#include "lib/vector.h"
-#include "lib/ray.h"
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+
+#include "lib/ppm.h"
+#include "lib/shapes.h"
+#include "lib/vector.h"
+#include "lib/ray.h"
+
 #define MAX_COLOR 255
 
 typedef union PPM_Color Color; 
 
-bool hit_sphere(V3_ptr center, double rad, Ray_ptr ray) {
-    /* (ray_at(t)-center)(ray_at(t)-center) = rad^2
-     * ((orig+t*dir)-center)^2 = rad^2
-     * t^2*dir*dir + 2t*dir*(orig-center)+(orig-center)^2 - rad^2 = 0 
-     * t^2*a + t*b + c = 0
-     * We are "solving" that quadratic */
-    V3 neg_center = V3_scale(center, -1);
-    V3 oc = V3_nsum(2, &ray->orig, &neg_center);
-    double a = V3_dot(&ray->dir, &ray->dir);
-    double b = 2.0 * V3_dot(&oc, &ray->dir);
-    double c = V3_dot(&oc, &oc) - rad*rad;
-    double discriminant = b*b - 4*a*c;
-    return (discriminant > 0);
-}
-
-
-Color ray_color(Ray_ptr r) {
-    V3 center = {.x = 0, .y = 0, .z = -1};
-
-    if (hit_sphere(&center, 0.5, r)) {
+Color ray_color(ShapeObjectPtr o, RayPtr r) {
+    if (shapeHit(o, r, 0, 500)) {
         Color color = {
             .r = MAX_COLOR,
             .g = 0,
@@ -72,6 +57,8 @@ int main() {
     /* Drawing/render */
     Ray ray = {.orig = origin, .dir = direction};
 
+    ShapeObjectPtr sphere = shapeObjectInit(SPHERE, V3_create(0, 0, -1), 0.5);
+
     for(int row = 0; row < h; row++) {
         for(int col = 0; col < w; col++) {
             double u = (double)col / (w-1);
@@ -82,10 +69,13 @@ int main() {
 
             ray.dir = V3_nsum(3, &llc, &scale_h, &scale_v);
             
-            Color color = ray_color(&ray);
+            Color color = ray_color(sphere, &ray);
             PPM_set(row, col, color);
         }
     }
 
     PPM_save_as("output/3_sphere.ppm");
+    PPM_destroy();
+
+    shapeObjectDestroy(sphere);
 }

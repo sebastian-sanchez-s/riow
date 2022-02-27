@@ -1,36 +1,20 @@
-#include "lib/ppm.h"
-#include "lib/vector.h"
-#include "lib/ray.h"
-#include "lib/sphere.h"
-
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+
+#include "lib/ppm.h"
+#include "lib/shapes.h"
+#include "lib/vector.h"
+#include "lib/ray.h"
 
 #define MAX_COLOR 255
 
 typedef union PPM_Color Color; 
 
-bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
-    HitRecord ch; // current hit record
-    bool has_hitted = false;
-    double closest_hit = t_max;
-
-    for (int i = 0; s[i]; i++) {
-        if (Sphere_hit(s[i], r, &ch, t_min, closest_hit)) {
-            has_hitted = true;
-            closest_hit = ch.t;
-            *h = ch;
-        }
-    }
-
-    return has_hitted;
-}
-
-Color ray_color(Ray_ptr r, Sphere_ptr s[]) {
+Color ray_color(RayPtr r, ShapeObjectArray targets) {
     HitRecord h;
 
-    if (sphere_closest_hit(s, r, &h, 0, 500)) {
+    if (shapeClosestHit(targets, r, &h, 0, 500)) {
         Color color = {{
             .r = .5*(h.normal.x+1.0)*MAX_COLOR,
             .g = .5*(h.normal.y+1.0)*MAX_COLOR,
@@ -76,17 +60,10 @@ int main() {
     // Objects
     Ray ray = {.orig = origin};
 
-    Sphere s1 = {
-        .center = V3_create(0, 0, -1),
-        .rad    = 0.5
-    };
-
-    Sphere s2 = {
-        .center = V3_create(0, -100.5, -1),
-        .rad    = 100
-    };
-
-    Sphere_ptr spheres[] = {&s1, &s2, NULL};
+    ShapeObjectArray targets = shapeArrayInit(2,
+            shapeObjectInit(SPHERE, V3_create(0, 0, -1), 0.5),
+            shapeObjectInit(SPHERE, V3_create(0, -100.5, -1), 100.0)
+    );
 
     for(int row = 0; row < h; row++) {
         for(int col = 0; col < w; col++) {
@@ -98,10 +75,13 @@ int main() {
 
             ray.dir = V3_nsum(3, &llc, &scale_h, &scale_v);
             
-            Color color = ray_color(&ray, spheres);
+            Color color = ray_color(&ray, targets);
             PPM_set(row, col, color);
         }
     }
 
     PPM_save_as("output/5_hittable.ppm");
+    PPM_destroy();
+
+    shapeArrayDestroy(targets);
 }

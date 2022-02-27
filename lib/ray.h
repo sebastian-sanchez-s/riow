@@ -8,8 +8,8 @@ typedef struct _Ray {
     V3 dir;
 } Ray;
 
-typedef Ray* Ray_ptr;
+typedef Ray* RayPtr;
 
-V3 Ray_at(Ray_ptr, double);
+V3 Ray_at(RayPtr, double);
 
 #endif

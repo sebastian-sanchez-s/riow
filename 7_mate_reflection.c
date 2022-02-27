@@ -1,7 +1,7 @@
 #include "lib/ppm.h"
 #include "lib/vector.h"
 #include "lib/ray.h"
-#include "lib/sphere.h"
+#include "lib/shapes.h"
 #include "lib/camera.h"
 #include "lib/random.h"
 
@@ -16,13 +16,13 @@
 
 typedef union PPM_Color Color;
 
-V3 ray_color(Ray_ptr r, Sphere_ptr s[], int ncollision) {
+V3 ray_color(RayPtr r, ShapeObjectArray targets, int ncollision) {
     if (ncollision <= 0) {
         return V3_create(0, 0, 0);
     }
 
     HitRecord h;
-    if (Sphere_closest_hit(s, r, &h, TMIN, TMAX)) {
+    if (shapeClosestHit(targets, r, &h, TMIN, TMAX)) {
         V3 unit = V3_random_in_unit_sphere();
         unit = V3_scale(&unit, V3_dot(&unit, &h.normal) > 0.0 ? 1.0: -1.0);
 
@@ -31,7 +31,7 @@ V3 ray_color(Ray_ptr r, Sphere_ptr s[], int ncollision) {
         r->orig = h.point;
         r->dir  = V3_nsum(2, &target, &unit);
         
-        V3 color = ray_color(r, s, ncollision - 1);
+        V3 color = ray_color(r, targets, ncollision - 1);
 
         return V3_scale(&color, 0.5);
     }
@@ -84,17 +84,10 @@ int main() {
     
     
     /* Drawing/render */
-    Sphere s1 = {
-        .center = {0, 0, -1},
-        .rad    = 0.5
-    };
-
-    Sphere s2 = {
-        .center = {0, -100.5, -1},
-        .rad    = 100
-    };
-
-    Sphere_ptr spheres[] = {&s1, &s2, NULL};
+    ShapeObjectArray targets = shapeArrayInit(2,
+            shapeObjectInit(SPHERE, V3_create(0, 0, -1), 0.5),
+            shapeObjectInit(SPHERE, V3_create(0, -100.5, -1), 100.0)
+    );
     
     /* Drawing constants */
     const int samples_per_pixel = 50;
@@ -111,7 +104,7 @@ int main() {
                 
                 Ray r = Camera_get_ray(&cam, u, v);
 
-                V3 new_color = ray_color(&r, spheres, max_collisions);
+                V3 new_color = ray_color(&r, targets, max_collisions);
                 pixel_color = V3_nsum(2, &pixel_color, &new_color);
             }
 
@@ -120,4 +113,7 @@ int main() {
     }
 
     PPM_save_as("output/7_mate_reflection.ppm");
+
+    PPM_destroy();
+    shapeArrayDestroy(targets);
 }

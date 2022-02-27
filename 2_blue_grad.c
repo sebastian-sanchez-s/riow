@@ -9,7 +9,7 @@ typedef union PPM_Color Color;
 
 #define MAX_COLOR 255
 
-Color ray_color(Ray_ptr r) {
+Color ray_color(RayPtr r) {
     V3 unit = V3_unit(&r->dir);
     double t = 0.5 * (unit.y + 1.0);
 
@@ -63,4 +63,5 @@ int main() {
     }
 
     PPM_save_as("output/2_blue_grad.ppm");
+    PPM_destroy();
 }

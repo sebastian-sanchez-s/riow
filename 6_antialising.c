@@ -1,7 +1,7 @@
 #include "lib/ppm.h"
 #include "lib/vector.h"
 #include "lib/ray.h"
-#include "lib/sphere.h"
+#include "lib/shapes.h"
 #include "lib/camera.h"
 #include "lib/random.h"
 
@@ -13,26 +13,10 @@ typedef union PPM_Color Color;
 
 #define MAX_COLOR 255
 
-bool sphere_closest_hit(Sphere_ptr s[], Ray_ptr r, HitRecord_ptr h, double t_min, double t_max) {
-    HitRecord ch; // current hit record
-    bool has_hitted = false;
-    double closest_hit = t_max;
-
-    for (int i = 0; s[i]; i++) {
-        if (Sphere_hit(s[i], r, &ch, t_min, closest_hit)) {
-            has_hitted = true;
-            closest_hit = ch.t;
-            *h = ch;
-        }
-    }
-
-    return has_hitted;
-}
-
-V3 ray_color(Ray_ptr r, Sphere_ptr s[]) {
+V3 ray_color(RayPtr r, ShapeObjectArray targets) {
     HitRecord h;
 
-    if (sphere_closest_hit(s, r, &h, 0, 500)) {
+    if (shapeClosestHit(targets, r, &h, 0, 500)) {
         V3 color = {
             .x = .5*(h.normal.x+1.0),
             .y = .5*(h.normal.y+1.0),
@@ -73,6 +57,7 @@ int main() {
     int w = 400;
     int h = w/aspect_ratio;
     int samples_per_pixel = 100;
+
     PPM_init(h, w);
     
     /* Camera */
@@ -94,17 +79,10 @@ int main() {
     
     /* Drawing/render */
     // Objects
-    Sphere s1 = {
-        .center = {0, 0, -1},
-        .rad    = 0.5
-    };
-
-    Sphere s2 = {
-        .center = {0, -100.5, -1},
-        .rad    = 100
-    };
-
-    Sphere_ptr spheres[] = {&s1, &s2, NULL};
+    ShapeObjectArray targets = shapeArrayInit(2,
+            shapeObjectInit(SPHERE, V3_create(0, 0, -1), 0.5),
+            shapeObjectInit(SPHERE, V3_create(0, -100.5, -1), 100.0)
+    );
 
     for(int row = h-1; row >= 0; --row) {
         for(int col = 0; col < w; col++) {
@@ -117,7 +95,7 @@ int main() {
                 
                 Ray r = Camera_get_ray(&cam, u, v);
 
-                V3 new_color = ray_color(&r, spheres);
+                V3 new_color = ray_color(&r, targets);
                 pixel_color = V3_nsum(2, &pixel_color, &new_color);
             }
             
@@ -126,4 +104,7 @@ int main() {
     }
 
     PPM_save_as("output/6_antialiasing.ppm");
+
+    PPM_destroy();
+    shapeArrayDestroy(targets);
 }
