@@ -11,14 +11,16 @@
 #define MAX_COLOR 255
 
 PPMColor ray_color(ShapeObjectPtr o, RayPtr r) {
-    if (shapeHit(o, r, 0, 500)) {
+    HitRecord h;
+
+    if (shapeHit(o, &h, r, 0, 500)) {
         /* -1 <= unit        <= 1
          *  0 <= unit+1      <= 2
          *  0 <= .5*(unit+1) <= 1 */
         PPMColor color = {{
-            .r = .5 * (o->hit_record->normal.x + 1.0) * MAX_COLOR,
-            .g = .5 * (o->hit_record->normal.y + 1.0) * MAX_COLOR,
-            .b = .5 * (o->hit_record->normal.z + 1.0) * MAX_COLOR
+            .r = .5 * (h.normal.x + 1.0) * MAX_COLOR,
+            .g = .5 * (h.normal.y + 1.0) * MAX_COLOR,
+            .b = .5 * (h.normal.z + 1.0) * MAX_COLOR
         }};
         return color;
     }

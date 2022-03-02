@@ -1,22 +1,57 @@
 #include <stdarg.h>
+
 #include "dasvaca.h"
 #include "shapes.h"
-#include "hittable.h"
+
+#include "sphere.h"
+
+struct _ShapeObject {
+    void *shape;
+    int shape_type;
+};
+
+struct _ShapeObjectArray {
+    int count;
+    ShapeObjectPtr * at;
+};
+
+
+/**** Methods Arrays ***
+ * Must preserved order of enum 
+ *******************************/
+
+typedef bool  (*fnHit)(ShapeObjectPtr, HitRecordPtr, RayPtr, double, double);
+typedef void* (*fnInit)(va_list attr);
+typedef void  (*fnDestroy)(void *);
+
+const fnHit hit_methods[] = {
+    sphereHit,
+};
+
+const fnInit init_methods[] = {
+    sphereInit,
+};
+
+const fnDestroy destroy_methods[] = {
+    sphereDestroy,
+};
+
+/**********
+ * Shapes Methods Implementation
+ *********/
 
 bool 
-shapeHit(ShapeObjectPtr o, RayPtr r, double t_min, double t_max) {
-    return hit_methods[o->shape_type](o, r, t_min, t_max);
+shapeHit(ShapeObjectPtr o, HitRecordPtr h, RayPtr r, double t_min, double t_max) {
+    return hit_methods[o->shape_type](o, h, r, t_min, t_max);
 }
 
 ShapeObjectPtr 
-shapeObjectInit(ShapeType type, ...) {
+shapeObjectInit(int type, ...) {
     dv_true_or_panik((type < MAX_SHAPE && type >= 0),
             "invalid shape type, got '%i'",,type);
 
     ShapeObjectPtr o = dv_malloc(sizeof(*o));
     o->shape_type = (ShapeType) type;
-
-    o->hit_record = dv_malloc(sizeof(*o->hit_record));
 
     va_list attr;
     va_start(attr, type);
@@ -28,19 +63,23 @@ shapeObjectInit(ShapeType type, ...) {
     return o;
 }
 
+void *
+shapeGet(ShapeObjectPtr o) {
+    return o->shape;
+}
+
 void 
 shapeObjectDestroy(ShapeObjectPtr o) {
     destroy_methods[o->shape_type](o->shape);
 
-    free(o->hit_record);
     free(o);
 }
 
-ShapeObjectArray 
+ShapeObjectArrayPtr 
 shapeArrayInit(int size, ShapeObjectPtr a, ...) {
     dv_true_or_panik((size > 0), "Expected positive size, got %i",, size);
 
-    ShapeObjectArray array = dv_malloc(sizeof(*array));
+    ShapeObjectArrayPtr array = dv_malloc(sizeof(*array));
     
     array->at = dv_malloc(size * sizeof(*array->at));
     array->count = size;
@@ -59,7 +98,7 @@ shapeArrayInit(int size, ShapeObjectPtr a, ...) {
 }
 
 void 
-shapeArrayDestroy(ShapeObjectArray array) {
+shapeArrayDestroy(ShapeObjectArrayPtr array) {
     for (int i = 0; i < array->count; i++) {
         shapeObjectDestroy(array->at[i]);
     }
@@ -68,17 +107,19 @@ shapeArrayDestroy(ShapeObjectArray array) {
 }
 
 bool
-shapeClosestHit(ShapeObjectArray objects, RayPtr r, HitRecordPtr h, double t_min, double t_max) {
+shapeClosestHit(ShapeObjectArrayPtr objects, RayPtr r, HitRecordPtr h, double t_min, double t_max) {
    bool has_hitted = false;
    double closest_hit = t_max;
+
+   HitRecord curr_hit;
 
    for (int i = 0; i < objects->count; i++) {
         ShapeObjectPtr shape = objects->at[i];
 
-        if (shapeHit(shape, r, t_min, closest_hit)) {
+        if (shapeHit(shape, &curr_hit, r, t_min, closest_hit)) {
             has_hitted = true;
-            closest_hit = shape->hit_record->t; 
-            *h = *shape->hit_record;
+            closest_hit = curr_hit.t; 
+            *h = curr_hit;
         }
    }
 

@@ -4,13 +4,15 @@
 
 #include "lib/ppm.h"
 #include "lib/shapes.h"
+#include "lib/hittable.h"
 #include "lib/vector.h"
 #include "lib/ray.h"
 
 #define MAX_COLOR 255
 
 PPMColor ray_color(ShapeObjectPtr o, RayPtr r) {
-    if (shapeHit(o, r, 0, 500)) {
+    HitRecord h;
+    if (shapeHit(o, &h, r, 0, 500)) {
         PPMColor color = {
             .r = MAX_COLOR,
             .g = 0,

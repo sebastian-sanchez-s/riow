@@ -4,20 +4,14 @@
 #include <stdarg.h>
 #include <stdbool.h>
 
-#include "shape_object.h"
-#include "vector.h"
+#include "shapes.h"
 #include "ray.h"
 
-typedef struct _Sphere {
-    Vec3 center;
-    double rad;
-} Sphere;
-
+typedef struct _Sphere Sphere; 
 typedef Sphere* SpherePtr;
 
 void * sphereInit(va_list attr);
 void sphereDestroy(void *);
 
-bool sphereHit(ShapeObjectPtr, RayPtr, double, double);
-
+bool sphereHit(ShapeObjectPtr, HitRecordPtr, RayPtr, double, double);
 #endif

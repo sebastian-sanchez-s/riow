@@ -14,7 +14,7 @@
 #define TMAX 1000.0
 #define TMIN 0.01
 
-Vec3 ray_color(RayPtr r, ShapeObjectArray targets, int ncollision) {
+Vec3 ray_color(RayPtr r, ShapeObjectArrayPtr targets, int ncollision) {
     if (ncollision <= 0) {
         return vec3Create(0, 0, 0);
     }
@@ -82,7 +82,7 @@ int main() {
     
     
     /* Drawing/render */
-    ShapeObjectArray targets = shapeArrayInit(2,
+    ShapeObjectArrayPtr targets = shapeArrayInit(2,
             shapeObjectInit(SPHERE, vec3Create(0, 0, -1), 0.5),
             shapeObjectInit(SPHERE, vec3Create(0, -100.5, -1), 100.0)
     );

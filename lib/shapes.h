@@ -3,52 +3,39 @@
 
 #include <stdarg.h>
 
-#include "shape_object.h"
-
+#include "hittable.h"
 #include "ray.h"
-#include "sphere.h"
 
+/*** Supported shapes so far ***************************
+ * TODO: Trying to move this so that creating new shapes
+ * doesn't require modifying this file
+ * *****************************************************/ 
 typedef enum _ShapeType {
     SPHERE=0,
     MAX_SHAPE
 } ShapeType;
 
-struct _ShapeObjectArray {
-    int count;
-    ShapeObjectPtr * at;
-};
+/*******
+ * Opaque objects
+ ***********/
+typedef struct _ShapeObject ShapeObject;
+typedef ShapeObject* ShapeObjectPtr;
 
-typedef struct _ShapeObjectArray* ShapeObjectArray;
-
-/******************
- * Methods Arrays
- * ****************/
-typedef bool (*fnHit)(ShapeObjectPtr, RayPtr, double, double);
-const fnHit hit_methods[] = {
-    sphereHit,
-};
-
-typedef void* (*fnInit)(va_list attr);
-const fnInit init_methods[] = {
-    sphereInit,
-};
-
-typedef void (*fnDestroy)(void *attr);
-const fnDestroy destroy_methods[] = {
-    sphereDestroy,
-};
-
+typedef struct _ShapeObjectArray ShapeObjectArray;
+typedef ShapeObjectArray* ShapeObjectArrayPtr;
 /************
  * Methods wrappers
  *******************/
-ShapeObjectPtr shapeObjectInit(ShapeType, ...);
+ShapeObjectPtr shapeObjectInit(int shape_type, ...);
 
 void shapeObjectDestroy(ShapeObjectPtr);
 
-bool shapeHit(ShapeObjectPtr, RayPtr, double, double);
-bool shapeClosestHit(ShapeObjectArray, RayPtr, HitRecordPtr, double t_min, double t_max);
+void *shapeGet(ShapeObjectPtr);
 
-ShapeObjectArray shapeArrayInit(int size, ShapeObjectPtr, ...);
-void shapeArrayDestroy(ShapeObjectArray);
+bool shapeHit(ShapeObjectPtr, HitRecordPtr, RayPtr, double, double);
+bool shapeClosestHit(ShapeObjectArrayPtr, RayPtr, HitRecordPtr, double t_min, double t_max);
+
+ShapeObjectArrayPtr shapeArrayInit(int size, ShapeObjectPtr, ...);
+void shapeArrayDestroy(ShapeObjectArrayPtr);
 
 #endif

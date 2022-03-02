@@ -9,7 +9,7 @@
 
 #define MAX_COLOR 255
 
-PPMColor ray_color(RayPtr r, ShapeObjectArray targets) {
+PPMColor ray_color(RayPtr r, ShapeObjectArrayPtr targets) {
     HitRecord h;
 
     if (shapeClosestHit(targets, r, &h, 0, 500)) {
@@ -58,7 +58,7 @@ int main() {
     // Objects
     Ray ray = {.orig = origin};
 
-    ShapeObjectArray targets = shapeArrayInit(2,
+    ShapeObjectArrayPtr targets = shapeArrayInit(2,
             shapeObjectInit(SPHERE, vec3Create(0, 0, -1), 0.5),
             shapeObjectInit(SPHERE, vec3Create(0, -100.5, -1), 100.0)
     );
