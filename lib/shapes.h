@@ -26,10 +26,11 @@ typedef ShapeObjectArray* ShapeObjectArrayPtr;
 /************
  * Methods wrappers
  *******************/
-ShapeObjectPtr shapeObjectInit(int shape_type, ...);
+ShapeObjectPtr shapeObjectInit(ShapeType t, ...);
 
 void shapeObjectDestroy(ShapeObjectPtr);
 
+// gets the specific shape
 void *shapeGet(ShapeObjectPtr);
 
 bool shapeHit(ShapeObjectPtr, HitRecordPtr, RayPtr, double, double);
