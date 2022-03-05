@@ -5,8 +5,11 @@
 #include <stdarg.h>
 
 Vec3 vec3Create(double x, double y, double z) {
-    Vec3 v = {.x = x, .y = y, .z = z };
-    return v;
+    return (Vec3) {.x = x, .y = y, .z = z };
+}
+
+Vec3 vec3Product(Vec3Ptr a, Vec3Ptr b) {
+    return (Vec3) {a->x * b->x, a->y * b->y, a->z * b->z};
 }
 
 Vec3 vec3RandomInUnitSphere() {
@@ -17,12 +20,11 @@ Vec3 vec3RandomInUnitSphere() {
 }
 
 Vec3 vec3Scale(Vec3Ptr a, double t) {
-    Vec3 v = {
+    return (Vec3) {
         .x = a->x*t,
         .y = a->y*t,
         .z = a->z*t
     };
-    return v;
 }
 
 Vec3 vec3NSum(int n, Vec3Ptr a, ...) {
@@ -63,21 +65,19 @@ Vec3 vec3Sum(Vec3Ptr a, ...) {
 }
 
 Vec3 vec3Cross(Vec3Ptr a, Vec3Ptr b) {
-    Vec3 v = {
+    return (Vec3) {
         .x = a->y*b->z - a->z*b->y,
         .y = a->z*b->x - a->x*b->z,
         .z = a->x*b->y - a->y*b->x
     };
-    return v;
 }
 
 Vec3 vec3LowerBound(Vec3Ptr a, double e) {
-    Vec3 v = {
+    return (Vec3) {
         .x = a->x < e ? e: a->x,
         .y = a->y < e ? e: a->y,
         .z = a->z < e ? e: a->z
     };
-    return v;
 }
 
 Vec3 vec3Unit(Vec3Ptr a) {

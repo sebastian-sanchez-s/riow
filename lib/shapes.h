@@ -28,6 +28,8 @@ typedef ShapeObjectArray* ShapeObjectArrayPtr;
  *******************/
 ShapeObjectPtr shapeObjectInit(ShapeType t, ...);
 
+void setMaterial(ShapeObjectPtr, int);
+
 void shapeObjectDestroy(ShapeObjectPtr);
 
 // gets the specific shape
@@ -37,6 +39,7 @@ bool shapeHit(ShapeObjectPtr, HitRecordPtr, RayPtr, double, double);
 bool shapeClosestHit(ShapeObjectArrayPtr, RayPtr, HitRecordPtr, double t_min, double t_max);
 
 ShapeObjectArrayPtr shapeArrayInit(int size, ShapeObjectPtr, ...);
+ShapeObjectPtr shapeArrayAt(ShapeObjectArrayPtr, int);
 void shapeArrayDestroy(ShapeObjectArrayPtr);
 
 #endif

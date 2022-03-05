@@ -9,6 +9,7 @@ typedef Vec3* Vec3Ptr;
 
 Vec3 vec3Create(double x, double y, double z);
 Vec3 vec3Scale(Vec3Ptr, double);
+Vec3 vec3Product(Vec3Ptr, Vec3Ptr);
 Vec3 vec3Sum(Vec3Ptr, ...);
 Vec3 vec3NSum(int, Vec3Ptr, ...);
 Vec3 vec3Cross(Vec3Ptr, Vec3Ptr);

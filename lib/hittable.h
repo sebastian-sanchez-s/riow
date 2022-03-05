@@ -11,6 +11,7 @@ typedef struct _HitRecord {
     Vec3 point;
     Vec3 normal;
     bool front_face;
+    int material_type;
 } HitRecord;
 
 typedef HitRecord* HitRecordPtr;

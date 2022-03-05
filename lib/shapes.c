@@ -8,6 +8,7 @@
 struct _ShapeObject {
     void *shape;
     int shape_type;
+    int material_type;
 };
 
 struct _ShapeObjectArray {
@@ -46,7 +47,7 @@ shapeHit(ShapeObjectPtr o, HitRecordPtr h, RayPtr r, double t_min, double t_max)
 }
 
 ShapeObjectPtr 
-shapeObjectInit(int type, ...) {
+shapeObjectInit(ShapeType type, ...) {
     dv_true_or_panik((type < MAX_SHAPE && type >= 0),
             "invalid shape type, got '%i'",,type);
 
@@ -61,6 +62,10 @@ shapeObjectInit(int type, ...) {
     va_end(attr);
 
     return o;
+}
+
+void setMaterial(ShapeObjectPtr o, int material_type) {
+    o->material_type = material_type;
 }
 
 void *
@@ -97,6 +102,14 @@ shapeArrayInit(int size, ShapeObjectPtr a, ...) {
     return array;
 }
 
+ShapeObjectPtr
+shapeArrayAt(ShapeObjectArrayPtr o, int i) {
+    dv_true_or_panik((i >= 0 && i < o->count),
+            "out of bounds, index '%i'",, i);
+
+    return o->at[i];
+}
+
 void 
 shapeArrayDestroy(ShapeObjectArrayPtr array) {
     for (int i = 0; i < array->count; i++) {
@@ -120,6 +133,7 @@ shapeClosestHit(ShapeObjectArrayPtr objects, RayPtr r, HitRecordPtr h, double t_
             has_hitted = true;
             closest_hit = curr_hit.t; 
             *h = curr_hit;
+            h->material_type = shape->material_type;
         }
    }
 
