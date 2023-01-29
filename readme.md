@@ -22,3 +22,6 @@ Follow up of [Ray Tracing in One Weekend](https://raytracing.github.io/books/Ray
 
 ## 7. Mate Reflection 
 <img src="https://user-images.githubusercontent.com/41296566/155775765-77cd953f-2ee1-466c-8848-75e0224ed03f.png" height="250px">
+
+## 8. Metal
+<img src="https://user-images.githubusercontent.com/41296566/215357311-68761ed8-fb83-4507-ae4b-015945e0320f.png" height="250px">
